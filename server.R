@@ -8,6 +8,8 @@
 library(shiny)
 
 shinyServer(function(input, output) {
+  variable<<-1
+  
   #Mostrar la salida  
 #   output$salida<-renderText({ print(cat("Salida ",decimalSep)) })  
   
@@ -53,6 +55,7 @@ shinyServer(function(input, output) {
     plot.ts( Dt,   ylab = 'Dt',  bty = 'n', col="blue"); grid()
     plot.ts( rt,   ylab = 'rt',  bty = 'n', col="red");  grid()
     
+    variable<-5
     
        
     # generate bins based on input$bins from ui.R
@@ -65,4 +68,20 @@ shinyServer(function(input, output) {
     
   })
   
+  output$normalidad<-renderText({
+    print(variable)
+    
+#     options(repr.plot.width=8, repr.plot.height=7)
+#     par(mfrow=c(1,1))
+#     plot.ts( rt,   ylab = 'rt',  bty = 'n', col="red")
+  })
+  
+  server <- function(input, output, session) {
+    observeEvent(input$pruebaBoton, {
+      output$salida<-renderText({ "Dieron click" })
+      
+      session$sendCustomMessage(type = 'testmessage',
+                                message = 'Thank you for clicking')
+    })
+  }
 })

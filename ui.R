@@ -8,7 +8,6 @@
 library(shiny)
 
 shinyUI(pageWithSidebar(
-  
   # Application title
   headerPanel("Predicción en Series"),
   
@@ -47,6 +46,8 @@ shinyUI(pageWithSidebar(
   # Show a plot of the generated distribution
   mainPanel(
     h4("RESULTADOS", align="center"),
+    tags$head(tags$script(src = "message-handler.js")),
+    actionButton("pruebaBoton", "Haz click"),
     textOutput("salida"),
     plotOutput("distPlot")
   )

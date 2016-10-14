@@ -49,6 +49,8 @@ shinyUI(pageWithSidebar(
     tags$head(tags$script(src = "message-handler.js")),
     actionButton("pruebaBoton", "Haz click"),
     textOutput("salida"),
-    plotOutput("distPlot")
+    plotOutput("distPlot"),
+    h4("Siguiente parámetro"),
+    textOutput("normalidad")
   )
 ))

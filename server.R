@@ -8,6 +8,8 @@
 library(shiny)
 
 shinyServer(function(input, output) {
+  variable<<-1
+  
   #Mostrar la salida  
 #   output$salida<-renderText({ print(cat("Salida ",decimalSep)) })  
   
@@ -41,10 +43,52 @@ shinyServer(function(input, output) {
                             skip=as.numeric(lineasSaltar),
                             sep = as.character(datosSep),               # separador de campos
                             dec = as.character(decimalSep))               # separador de decimales
+<<<<<<< HEAD
       x <- ts(data  = seriecsv,
               freq  = as.character(periodicidad),
               start = c(2010,1))
 
+=======
+      
+    #hist(seriecsv$x)
+    Dt  <- c(NaN, diff(seriecsv$x))                                           # cambio absoluto
+    rt  <- c(NaN, log(seriecsv$x[2:length(seriecsv$x)] / seriecsv$x[1:(length(seriecsv$x) - 1)] )) # rentabilidad logaritmica 
+      
+    options(repr.plot.width=8, repr.plot.height=7)
+    par(mfrow=c(3,1))
+    
+    plot.ts( seriecsv$x,  ylab = 'TRM', bty = 'n' );            grid()
+    plot.ts( Dt,   ylab = 'Dt',  bty = 'n', col="blue"); grid()
+    plot.ts( rt,   ylab = 'rt',  bty = 'n', col="red");  grid()
+    
+    variable<-5
+    
+       
+    # generate bins based on input$bins from ui.R
+    #
+    #x    <- faithful[, 2] 
+    #bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    
+    # draw the histogram with the specified number of bins
+    #hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    
+>>>>>>> origin/master
   })
   
+  output$normalidad<-renderText({
+    print(variable)
+    
+#     options(repr.plot.width=8, repr.plot.height=7)
+#     par(mfrow=c(1,1))
+#     plot.ts( rt,   ylab = 'rt',  bty = 'n', col="red")
+  })
+  
+  server <- function(input, output, session) {
+    observeEvent(input$pruebaBoton, {
+      output$salida<-renderText({ "Dieron click" })
+      
+      session$sendCustomMessage(type = 'testmessage',
+                                message = 'Thank you for clicking')
+    })
+  }
 })

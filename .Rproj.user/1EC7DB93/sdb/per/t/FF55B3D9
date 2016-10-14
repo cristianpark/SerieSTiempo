@@ -1,0 +1,16 @@
+{
+    "contents" : "\n# This is the user-interface definition of a Shiny web application.\n# You can find out more about building applications with Shiny here:\n# \n# http://www.rstudio.com/shiny/\n#\n\nlibrary(shiny)\n\nshinyUI(pageWithSidebar(\n  \n  # Application title\n  headerPanel(\"Predicción en Series\"),\n  \n  # Sidebar with a slider input for number of bins\n  sidebarPanel(\n    fileInput('archivoSerie', 'Archivo de la serie de tiempo...',\n              accept=c('text/plain')\n    ),\n    selectInput(\"decimalSep\", \"Separador de decimales\", choices=list(\",\", \".\"), multiple = FALSE,\n                selectize = TRUE, width = NULL, size = NULL),\n    selectInput(\"datosSep\", \"Separador de datos\", choices=list(\"Tab\"=\"\\t\", \"Espacio\"=\" \", \"Espacio doble\"=\"  \"), multiple = FALSE,\n                selectize = TRUE, width = NULL, size = NULL),\n    selectInput(\"encabezado\", \"Encabezado\", choices=list(\"Si\"=TRUE, \"No\"=FALSE), selected = c(FALSE), multiple = FALSE,\n                selectize = TRUE, width = NULL, size = NULL),\n    conditionalPanel(\n      condition = \"input.encabezado=='TRUE'\",\n      strong(\"Número de líneas a omitir\"),\n      textInput(\"lineasSaltar\", width = \"50px\", label=\"\", value = 0)\n    ),\n    #Periodicidad de la serie\n    selectInput(\"periodicidad\", \"Periodicidad serie\", choices=list(\"Mensual\"=12, \"Bimestral\"=6, \"Trimestral\"=4, \"Cuatrimestres\"=3, \"Semestral\"=2), multiple = FALSE,\n                selectize = TRUE, width = NULL, size = NULL),\n    \n    #Fechas de la serie\n    dateRangeInput(\"fechasSerie\", \"Fechas:\",\n                   start  = \"2001-01-01\",\n                   end    = \"2010-12-31\",\n                   min    = \"1990-01-01\",\n                   max    = \"2016-06-30\",\n                   format = \"yyyy-mm-dd\",\n                   separator = \" - \"),\n    textInput(\"columnaDatos\", width = \"100px\", label=\"Columna datos\", value = \"x\")\n    \n  ),\n  \n  # Show a plot of the generated distribution\n  mainPanel(\n    h4(\"RESULTADOS\", align=\"center\"),\n    textOutput(\"salida\"),\n    plotOutput(\"distPlot\")\n  )\n))\n",
+    "created" : 1476156176120.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2704713992",
+    "id" : "FF55B3D9",
+    "lastKnownWriteTime" : 1476331608,
+    "path" : "~/EspAnalitica/06 Series de tiempo/SeriesTiempoShiny/ui.R",
+    "project_path" : "ui.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

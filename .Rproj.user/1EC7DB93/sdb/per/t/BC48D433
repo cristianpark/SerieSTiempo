@@ -1,0 +1,16 @@
+{
+    "contents" : "\n# This is the server logic for a Shiny web application.\n# You can find out more about building applications with Shiny here:\n# \n# http://www.rstudio.com/shiny/\n#\n\nlibrary(shiny)\n\nshinyServer(function(input, output) {\n  #Mostrar la salida  \n#   output$salida<-renderText({ print(cat(\"Salida \",decimalSep)) })  \n  \n  #serie1csv <- read.csv(file = 'serie1.csv', # nombre del archivo\n  #                      header = TRUE,           # nombres de columnas\n  #                      sep = \" \",               # separador de campos\n  #                      dec = \".\")               # separador de decimales\n  \n  #output$salida<-renderText({ cat(\"Hola pues \", input$decimalSep) })\n  \n  output$distPlot <- renderPlot({\n      #Leer los datos del archivo utilizando la configuración seleccionada  \n      decimalSep<-input$decimalSep\n      datosSep<-input$datosSep\n      encabezado<-input$encabezado\n      if(encabezado==TRUE)\n        lineasSaltar<-0\n      else\n        lineasSaltar<-input$lineasSaltar\n      periodicidad<-input$periodicidad\n      columnaDatos<-input$columnaDatos\n      \n      #Leer el archivo    \n      archivo<-input$archivoSerie\n      \n      if (is.null(archivo))\n        return(NULL)\n      \n      seriecsv <- read.csv(file = archivo$datapath, # nombre del archivo\n                            header = as.logical(encabezado),       # nombres de columnas\n                            skip=as.numeric(lineasSaltar),\n                            sep = as.character(datosSep),               # separador de campos\n                            dec = as.character(decimalSep))               # separador de decimales\n      \n    hist(seriecsv$x)\n      \n    # generate bins based on input$bins from ui.R\n    #\n    #x    <- faithful[, 2] \n    #bins <- seq(min(x), max(x), length.out = input$bins + 1)\n    \n    # draw the histogram with the specified number of bins\n    #hist(x, breaks = bins, col = 'darkgray', border = 'white')\n    \n  })\n  \n})\n",
+    "created" : 1476156176292.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2668232828",
+    "id" : "BC48D433",
+    "lastKnownWriteTime" : 1476331656,
+    "path" : "~/EspAnalitica/06 Series de tiempo/SeriesTiempoShiny/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

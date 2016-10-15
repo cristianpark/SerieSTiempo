@@ -8,6 +8,8 @@
 library(shiny)
 
 shinyServer(function(input, output){
+  seriecsv<-NULL
+  
   #Función para cargar el archivo de la serie a analizar
   cargarArchivo<-reactive({    
     if(is.null(seriecsv)){
@@ -39,8 +41,9 @@ shinyServer(function(input, output){
   #Gráfico de salida  
   output$distPlot <- renderPlot({
     seriecsv<-cargarArchivo()
-        
-    hist(seriecsv[[input$columnaDatos]])
+    if(!is.null(seriecsv)){
+      hist(seriecsv[[input$columnaDatos]])
+    }
     
 #     Dt  <- c(NaN, diff(seriecsv$x))                                           # cambio absoluto
 #     rt  <- c(NaN, log(seriecsv$x[2:length(seriecsv$x)] / seriecsv$x[1:(length(seriecsv$x) - 1)] )) # rentabilidad logaritmica 
@@ -55,7 +58,7 @@ shinyServer(function(input, output){
   
   #Gráfica de normalidad
   output$normalidad<-renderText({
-    seriecsv<-cargarArchivo
-    print(length(seriecsv))
+    format(input$fechasSerie[1])
+    format(input$fechasSerie[2])
   })
 })

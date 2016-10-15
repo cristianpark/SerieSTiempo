@@ -37,7 +37,9 @@ shinyUI(pageWithSidebar(
       tabPanel("Predicción", 
          br(),
          strong("Periodos predicción"),
-         textInput("periodosPrediccion", width = "50px", label="", value = 4)
+         textInput("periodosPrediccion", width = "50px", label="", value = 4),
+         strong("Periodos validación"),
+         textInput("periodosValidacion", width = "50px", label="", value = 4)
       )
     )
   ),
@@ -46,14 +48,17 @@ shinyUI(pageWithSidebar(
   mainPanel(
     tabsetPanel(
       tabPanel("Suavizado Exponencial",
-        br(),
-        strong("Serie"),        
         plotOutput("graficoSuavizado", height = "350px"),
         strong("Método Holt-Winters"),
         textOutput("holtWinters"),
         br(),
         strong("Error cuadrático"),
-        textOutput("errorWinters")
+        textOutput("errorWinters"),
+        plotOutput("graficoAjusteSE"),
+        strong("Predicción"),
+        plotOutput("graficoPrediccionSE"),
+        strong("Predicción con Forecast"),
+        plotOutput("graficoPrediccionFSE")
       ),
       tabPanel("Suavizado Browniano")
     )

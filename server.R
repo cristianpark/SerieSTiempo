@@ -67,8 +67,8 @@ shinyServer(function(input, output){
     if(!is.null(serie)){
       n<-length(serie) #longitud de la serie
       
-      serie.fit<-primerosSerie(serie, as.numeric(input$periodosPrediccion))
-      serie.for<-ultimosSerie(serie, as.numeric(input$periodosPrediccion))
+      serie.fit<-primerosSerie(serie, as.numeric(input$periodosValidacion))
+      serie.for<-ultimosSerie(serie, as.numeric(input$periodosValidacion))
     }
     
     #Vector con la serie y los conjuntos de prueba y 
@@ -83,6 +83,12 @@ shinyServer(function(input, output){
     if(!is.null(serie)){
       options(repr.plot.width=10, repr.plot.height=6)
       plot(serie)
+      
+      legend( "top",                                     # posicion
+              c("Serie real"),         # texto
+              lwd = c(2),                        # grosor lineas
+              col = c('black'), # color lineas
+              bty = "n")                                     # caja alrededor de la leyenda
     }
   })
   
@@ -92,21 +98,76 @@ shinyServer(function(input, output){
     
     if(!is.null(conjuntos$serie)){
       serie<-conjuntos$serie
-      
       serie.fit<-as.ts(conjuntos$fits)
       serie.for<-as.ts(conjuntos$fors)
       
       #Debug
-      cat(file=stderr(), "For ", serie.for, "\n")
+#       cat(file=stderr(), "For ", serie.for, "\n")
       
       modelo<-HoltWinters(x = serie.fit,      # conjunto de entrenamiento de la serie
                         alpha = NULL,    # NULL indica que se calcule el alpha óptimo
                         beta = FALSE,   # no se considera esta componente
-                        gamma = FALSE)  # no se considera esta componente
-      
-#       cat(file=stderr(), "For ", modelo, "\n")        
-
+                        gamma = FALSE)  # no se considera esta componente 
+        
+        #Error cuadrático
         output$errorWinters<-renderText({modelo$SSE})
+        
+        #Dibujar el gráfico de ajuste
+        output$graficoAjusteSE<-renderPlot({
+          options(repr.plot.width=10, repr.plot.height=6)
+          
+          plot(serie,              # datos de la serie
+               type = "o",     # o -- overplot
+               lwd = 3,        # ancho de la linea
+               ylim = c(min(serie)-1,max(serie)+1)) # límites min y max del eje Y
+          
+          lines(modelo$fitted[,1], col = "blue",lwd = 2)
+          
+          legend( "topleft",                                     # posicion
+                  c("Serie real","modelo"),         # texto
+                  lwd = c(3, 2),                        # grosor lineas
+                  col = c('black','blue'), # color lineas
+                  bty = "n")                                     # caja alrededor de la leyenda
+          
+          grid()
+        })        
+        
+        #Predicción de los n periodos elegidos por el usuario
+        prediccionHW <- predict( modelo,                         # Modelo ajustado por HW
+               n.ahead = as.numeric(input$periodosPrediccion),                # Periodos a pronosticar
+               prediction.interval = TRUE) # Calcular intervalos
+
+        #Gráfico de la predicción
+        output$graficoPrediccionSE<-renderPlot({
+          options(repr.plot.width=10, repr.plot.height=6)
+          
+          plot(serie,              # datos de la serie
+               type = "o",     # o -- overplot
+               lwd = 3,        # ancho de la linea
+               ylim = c(min(serie)-1,max(serie)+1)) # límites min y max del eje Y
+          
+          lines( prediccionHW[,1], col ="red",  lwd = 2)
+          
+          legend( x = "topleft", 
+                  legend = c("Real", "modelo"),
+                  lwd = c(3,2),
+                  col = c('black','red'),
+                  bty = 'n')
+          
+          grid()
+        })
+        
+        #Predicción usando forecast
+        prediccionFSE<-forecast.HoltWinters(modelo,   # Modelo ajustado por HW
+                           h=as.numeric(input$periodosPrediccion))  # Periodos a pronosticar
+
+        #Gráfico de la predicción
+        output$graficoPrediccionFSE<-renderPlot({
+          options(repr.plot.width=10, repr.plot.height=6)
+          plot.forecast(prediccionFSE)
+        })
+        
+        #Mostrar la información del método Holt-Winters
         modelo
     }
   })

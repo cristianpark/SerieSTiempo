@@ -196,20 +196,6 @@ shinyServer(function(input, output){
         modelo
     }
   })
-<<<<<<< HEAD
-  
-  
-  output$graficoRegresion<-renderPlot({
-    serie<-cargarArchivo()
-    if(!is.null(serie)){
-      options(repr.plot.width=10, repr.plot.height=6)
-      ## Variable x
-      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
-      
-      ## Ajuste
-      m1 <- lm(serie~t)
-      plot(t)
-=======
 
   ### Suavizado doble
   
@@ -225,7 +211,6 @@ shinyServer(function(input, output){
               lwd = c(2),                        # grosor lineas
               col = c('black'), # color lineas
               bty = "n")                                     # caja alrededor de la leyenda
->>>>>>> 635ee8ea1c71fc947eb091bb37f151ff99eb3555
     }
 =======
 >>>>>>> origin/master
@@ -233,54 +218,6 @@ shinyServer(function(input, output){
   })
   
   #Aplicación de método Holt-Winters
-<<<<<<< HEAD
-  output$resumenRegresion<-renderPrint({
-    
-    serie<-cargarArchivo()
-    if(!is.null(serie)){
-      options(repr.plot.width=10, repr.plot.height=6)
-      ## Variable x
-      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
-      
-      ## Ajuste
-      m1 <- lm(serie~t)
-        
-      output$resumenRegresion<-renderPrint ({summary(m1)})
-      
-    }
-  })
-  
-  output$graficoAjuste<-renderPlot({
-    serie<-cargarArchivo()
-    if(!is.null(serie)){
-      options(repr.plot.width=10, repr.plot.height=6)
-      ## Variable x
-      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
-      
-      ## Ajuste
-      m1 <- lm(serie~t)
-      
-      ## Grafica de ajuste.
-      plot(t,serie, type = "o", lwd = 3)                                         # ancho de la linea
-      
-      
-      lines(m1$fitted.values, col = "red", lwd = 2)
-      
-      
-      legend( "topleft",                                     # posicion
-              c("Serie real","Ajuste Regresion"),            # texto
-              lwd = c(3, 2),                                 # grosor lineas
-              col = c('black','red'),                        # color lineas
-              bty = "n")                                     # sin caja alrededor de la leyenda
-      
-      grid()
-      
-      
-      
-    }
-  })
-  
-=======
   output$holtWintersD<-renderPrint({
     conjuntos<-conjuntosPrueba()
     
@@ -359,5 +296,284 @@ shinyServer(function(input, output){
       modeloD
     }
   })
->>>>>>> 635ee8ea1c71fc947eb091bb37f151ff99eb3555
+  #Fin suavizado doble
+
+  ### Regresión lineal simple
+  output$graficoRegresion<-renderPlot({
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      plot(serie)
+    }
+  })
+
+  output$resumenRegresion<-renderPrint({
+    
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      
+      output$resumenRegresion<-renderPrint ({summary(m1)})
+      
+    }
+  })
+  
+  output$graficoAjuste<-renderPlot({
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      
+      ## Grafica de ajuste.
+      plot(t,serie, type = "o", lwd = 3)                                         # ancho de la linea
+      
+      
+      lines(m1$fitted.values, col = "red", lwd = 2)
+      
+      
+      legend( "topleft",                                     # posicion
+              c("Serie real","Ajuste Regresion"),            # texto
+              lwd = c(3, 2),                                 # grosor lineas
+              col = c('black','red'),                        # color lineas
+              bty = "n")                                     # sin caja alrededor de la leyenda
+      
+      grid()
+      
+      
+      
+    }
+  })
+  
+  output$graficoResiduales<-renderPlot({
+    serie<-cargarArchivo()
+    
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      
+      ## Extraer residuales modelo lineal
+      r1 = m1$residuals
+      
+      ## Residuales Modelo lineal
+      par(mfrow=c(2,2))
+      
+      plot(t,r1,
+           type='l',
+           ylab='',main="Residuales Modelo Cuadratico",
+           col="red")
+      
+      abline(h=0,lty=2)       # Linea para la media
+      
+      plot(density(r1),       # Grafica de densidad
+           xlab='x',
+           main= 'Densidad Residuales Modelo Cuadratico', 
+           col="red")
+      
+      qqnorm(r1)               # Grafica qqnorm para probar normalidad
+      qqline(r1,col=2)         # Linea
+      
+      acf(r1, ci.type="ma",60) # Prueba ACF
+      
+      
+    }
+  })
+  
+  output$graficoPronostico<-renderPlot({
+    
+    conjuntos<-conjuntosPrueba()
+    serie<-cargarArchivo()
+    
+    if(!is.null(serie)){
+      
+      serie.fit<-as.ts(conjuntos$fits)
+      serie.for<-as.ts(conjuntos$fors)
+      
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      
+      T=length(serie)           # Variable independiente t: Tiempo
+      
+      t=seq(1:(T-as.numeric(input$periodosPrediccion)))
+      
+      
+      ## Periodos a pronosticar
+      m<-as.numeric(input$periodosPrediccion)
+      
+      ## Variables indicadoras del pronostico
+      Itf = seasonaldummyf(serie.for,m)
+      
+      ## Tiempo 
+      tf = seq(T+1,T+m,1)
+      
+      ## Prediccion
+      y1 = predict(m1,data.frame(t = tf,It=I(Itf)))
+      
+      
+      y1<-ts(y1, start = tsp(serie.for)[1],
+             #c(as.numeric(input$anioInicio), as.numeric(input$periodoInicio)),         #Año de inicio - periodo de inicio
+             frequency = as.numeric(input$periodosPrediccion))
+      
+      plot(serie,
+           type = 'o',
+           lwd=2, 
+          ylim = c(min(serie)-20,max(serie)+20)) # límites min y max del eje Y
+      
+      lines(y1,col='red',lwd=2)
+      
+      legend( "topleft",                                      # posicion
+              c("Serie real","Pron. Regresion"),              # texto
+              lwd = c(2.5, 2),                                # grosor lineas   
+              col = c('black','red'),                         # color lineas
+              bty = "n")                                      # sin caja alrededor de la leyenda
+      
+      grid()
+      
+    }
+  })
+
+
+  ### Método de tendencia cuadrática
+  
+  #Gráfico de la serie 
+  output$graficoCuadratica<-renderPlot({
+    serieC<-cargarArchivo()
+    if(!is.null(serieC)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      plot(serieC)
+      
+      legend( "top",                                     # posicion
+              c("Serie real"),         # texto
+              lwd = c(2),                        # grosor lineas
+              col = c('black'), # color lineas
+              bty = "n")                                     # caja alrededor de la leyenda
+    }
+  })
+  
+  #Aplicación de método tendencia cuadrática
+  output$metodoCuadratico<-renderPrint({
+    conjuntos<-conjuntosPrueba()
+    
+    if(!is.null(conjuntos$serie)){
+      serieC<-conjuntos$serie
+      serieC.fit<-as.ts(conjuntos$fits)
+      serieC.for<-as.ts(conjuntos$fors)
+      
+      ## Variable x
+      t<-seq(1:length(serieC))                             # Variable independiente t: Tiempo
+      tt<-t*t                                         # Parametro t^2
+      
+      ## Ajuste
+      modeloC<-lm(serieC~t+tt)
+      
+      output$resumenCuadratico<-renderPrint({ summary(modeloC) })
+             
+      #Dibujar el gráfico de ajuste
+      output$graficoAjusteCuadratica<-renderPlot({
+        options(repr.plot.width=10, repr.plot.height=6)
+        
+        plot(t,serieC,                                             # datos de la serie
+             type = "o",                                      # o -- overplot
+             lwd = 3)                                         # ancho de la linea
+        
+        
+        lines(modeloC$fitted.values, col = "red", lwd = 2)
+        
+        legend( "topleft",                                     # posicion
+                c("Serie real","Ajuste Regresión"),            # texto
+                lwd = c(3, 2),                                 # grosor lineas
+                col = c('black','red'),                        # color lineas
+                bty = "n")                                     # sin caja alrededor de la leyenda
+        
+        grid()
+      })     
+      
+      #Gráfica residuales
+      output$graficoResidualesCuadratica<-renderPlot({
+        ## Extraer residuales modelo cuadrático
+        r2 = modeloC$residuals
+        
+        # Residuales Modelo Cuadrático
+        par(mfrow=c(2,2))
+        options(repr.plot.width=10, repr.plot.height=6)
+        
+        plot(t,r2,
+             type='l',
+             ylab='',main="Residuales Modelo Cuadrático",
+             col="red")
+        
+        abline(h=0,lty=2)        # Linea para la media
+        
+        plot(density(r2),        # Gráfica de densidad
+             xlab='x',
+             main= 'Densidad Residuales Modelo Cuadrático', 
+             col="red")
+        
+        qqnorm(r2)               # Gráfica qqnorm para probar normalidad
+        qqline(r2,col=2)         # Linea
+        
+        acf(r2, ci.type="ma",60) # Prueba ACF
+      })
+      
+      #Predicción de los n periodos elegidos por el usuario
+#       
+#       ## Longitud del periodo de ajuste
+#       T = length(serieC)
+#       
+#       ## Variables indicadoras del pronostico
+#       Itf = seasonaldummy(serieC.for, as.numeric(input$periodosPrediccion))
+#       
+#       ## Tiempo 
+#       tf = seq(T+1,T+as.numeric(input$periodosPrediccion),1)
+#       
+#       ## Predicción
+#       prediccionC= predict(modeloC,data.frame(t = tf,It=I(Itf)))
+#       prediccionC<-ts(prediccionC,freq=frequency(serieC),start=tsp(serieC.for)[1])
+#       
+#       #Gráfico de la predicción
+#       output$graficoPrediccionCuadratica<-renderPlot({
+#         options(repr.plot.width=10, repr.plot.height=6)
+#         
+#         plot(serieC,
+#               type = 'o',
+#               lwd=2,
+#               ylim=c(10.5,15))
+#         
+#         lines(prediccionC,col='red',lwd=2)
+#         
+#         legend( "topleft",                                      # posicion
+#                 c("Serie real","Pron. Regresión"),              # texto
+#                 lwd = c(2.5, 2),                                # grosor lineas   
+#                 col = c('black','red'),                         # color lineas
+#                 bty = "n")                                      # sin caja alrededor de la leyenda
+#         
+#         grid()
+#       })
+      
+      #Mostrar la información del método Holt-Winters
+      modeloC
+    }
+  })
+    ##FIN tendencia cuadrática
 })

@@ -13,22 +13,32 @@ shinyUI(pageWithSidebar(
   
   #Sidebar
   sidebarPanel(
-    fileInput('archivoSerie', 'Archivo de la serie de tiempo...', accept=c('text/plain')),
-    selectInput("decimalSep", "Separador de decimales", choices=list(".", ","), multiple = FALSE,
-                selectize = TRUE, width = NULL, size = NULL),
-    selectInput("datosSep", "Separador de datos", choices=list("Tab"="\t", "Espacio"=" ", "Espacio doble"="  "), multiple = FALSE,
-                selectize = TRUE, width = NULL, size = NULL),
-    selectInput("encabezado", "Encabezado", choices=list("Si"=TRUE, "No"=FALSE), selected = c(TRUE), multiple = FALSE,
-                selectize = TRUE, width = NULL, size = NULL),
-    conditionalPanel(
-      condition = "input.pruebaBoton",
-      strong("Número de líneas a omitir"),
-      textInput("lineasSaltar", width = "50px", label="", value = 0)
-    ),
-    strong("Año de inicio"),
-    textInput("añoInicio", width = "70px", label="", value = 2010),
-    strong("Periodo inicio"),
-    textInput("periodoInicio", width = "50px", label="", value = 1)
+    tabsetPanel(
+      tabPanel("Serie",
+        br(),
+        fileInput('archivoSerie', 'Archivo de la serie de tiempo...', accept=c('text/plain')),
+        selectInput("decimalSep", "Separador de decimales", choices=list(".", ","), multiple = FALSE,
+                    selectize = TRUE, width = NULL, size = NULL),
+        selectInput("datosSep", "Separador de datos", choices=list("Tab"="\t", "Espacio"=" ", "Espacio doble"="  "), multiple = FALSE,
+                    selectize = TRUE, width = NULL, size = NULL),
+        selectInput("encabezado", "Encabezado", choices=list("Si"=TRUE, "No"=FALSE), selected = c(TRUE), multiple = FALSE,
+                    selectize = TRUE, width = NULL, size = NULL),
+        conditionalPanel(
+          condition = "input.pruebaBoton",
+          strong("Número de líneas a omitir"),
+          textInput("lineasSaltar", width = "50px", label="", value = 0)
+        ),
+        strong("Año de inicio"),
+        textInput("añoInicio", width = "70px", label="", value = 2010),
+        strong("Periodo inicio"),
+        textInput("periodoInicio", width = "50px", label="", value = 1),
+        textInput("columnaDatos", width = "100px", label="Columna datos", value = "x")
+      ),
+      tabPanel("Predicción", 
+         strong("Periodos predicción"),
+         textInput("periodosPrediccion", width = "50px", label="", value = 4)
+      )
+    )
     #Periodicidad de la serie
 #     selectInput("periodicidad", "Periodicidad serie", choices=list("Mensual"=12, "Bimestral"=6, "Trimestral"=4, "Cuatrimestres"=3, "Semestral"=2, "Diaria"=365), multiple = FALSE,
 #                 selectize = TRUE, width = NULL, size = NULL),
@@ -41,7 +51,6 @@ shinyUI(pageWithSidebar(
 #                    max    = "2016-06-30",
 #                    format = "yyyy-mm-dd",
 #                    separator = " - "),
-#     textInput("columnaDatos", width = "100px", label="Columna datos", value = "x")
     
   ),
   

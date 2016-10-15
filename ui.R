@@ -65,21 +65,7 @@ shinyUI(pageWithSidebar(
         plotOutput("graficoPrediccionSE"),
         strong("Predicción con Forecast"),
         plotOutput("graficoPrediccionFSE")
-      ),
-<<<<<<< HEAD
-      tabPanel("Pronostico con Regresion",
-        br(),
-        strong("Serie"),
-        plotOutput("graficoRegresion", height = "350px"),
-        strong("Resumen de la regresion"),
-        textOutput("resumenRegresion"),
-        plotOutput("graficoAjuste", height = "350px")
-        
-      )
-      
-      
-=======
-      
+      ),      
       ##Suavizado exponencial doble
       tabPanel("Exponencial Doble",
          plotOutput("graficoSuavizadoD", height = "350px"),
@@ -94,9 +80,8 @@ shinyUI(pageWithSidebar(
          strong("Predicción con Forecast"),
          plotOutput("graficoPrediccionFSED")
       ),
-      
-<<<<<<< HEAD
-      tabPanel("Pronostico con Regresion",
+
+      tabPanel("Pronóstico con Regresión",
                br(),
                strong("Serie"),
                plotOutput("graficoRegresion", height = "350px"),
@@ -125,10 +110,6 @@ shinyUI(pageWithSidebar(
 #                strong("Predicción"),
 #                plotOutput("graficoPrediccionCuadratica")
       )
-=======
-      ##Otros métodos
->>>>>>> 635ee8ea1c71fc947eb091bb37f151ff99eb3555
->>>>>>> ced35416a92251b3181b226ae2c22ef7b9e71fde
     )
   )
 )#Fin pageWithSideBar

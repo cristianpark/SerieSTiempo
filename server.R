@@ -14,7 +14,7 @@ shinyServer(function(input, output){
   serie.for<-NULL
   
   #Función para cargar el archivo de la serie a analizar
-  cargarArchivo<-reactive({    
+  cargarArchivo<-reactive({   
     if(is.null(serie)){
       #Leer los datos del archivo utilizando la configuración seleccionada (se necesita reactive para poner hacerlo todo)
       decimalSep<-input$decimalSep
@@ -38,6 +38,13 @@ shinyServer(function(input, output){
                            skip=as.numeric(lineasSaltar),
                            sep = as.character(datosSep),               # separador de campos
                            dec = as.character(decimalSep))               # separador de decimales
+      
+      #Preview del archivo
+      output$previewArchivo<-renderPrint({
+        output$labelPreviewArchivo<-renderUI({ tags$b("Preview") })
+        
+        head(seriecsv, 3, addrownums = FALSE)
+      })
       
       #Crea la serie de tiempo partiendo del CSV
       serie<-ts(data=seriecsv[[columnaDatos]],        #Genera los datos aleatorios
@@ -110,7 +117,7 @@ shinyServer(function(input, output){
                         gamma = FALSE)  # no se considera esta componente 
         
         #Error cuadrático
-        output$errorWinters<-renderText({modelo$SSE})
+        output$errorWinters<-renderUI({tags$code(modelo$SSE)})
         
         #Dibujar el gráfico de ajuste
         output$graficoAjusteSE<-renderPlot({

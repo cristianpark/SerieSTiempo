@@ -38,10 +38,23 @@ shinyServer(function(input, output){
       
       #Cargar el CSV
       seriecsv <- read.csv(file = archivo$datapath, # nombre del archivo
+<<<<<<< HEAD
                            header = as.logical(encabezado),       # nombres de columnas
                            skip=as.numeric(lineasSaltar),
                            sep = as.character(datosSep),               # separador de campos
                            dec = as.character(decimalSep))               # separador de decimales
+=======
+                            header = as.logical(encabezado),       # nombres de columnas
+                            skip=as.numeric(lineasSaltar),
+                            sep = as.character(datosSep),               # separador de campos
+                            dec = as.character(decimalSep))               # separador de decimales
+<<<<<<< HEAD
+      x <- ts(data  = seriecsv,
+              freq  = as.character(periodicidad),
+              start = c(2010,1))
+
+=======
+>>>>>>> refs/remotes/juccuartasmo/master
       
       #Preview del archivo
       output$previewArchivo<-renderPrint({
@@ -107,6 +120,7 @@ shinyServer(function(input, output){
   output$holtWinters<-renderPrint({
     conjuntos<-conjuntosPrueba()
     
+<<<<<<< HEAD
     if(!is.null(conjuntos$serie)){
       serie<-conjuntos$serie
       serie.fit<-as.ts(conjuntos$fits)
@@ -213,6 +227,9 @@ shinyServer(function(input, output){
               bty = "n")                                     # caja alrededor de la leyenda
 >>>>>>> 635ee8ea1c71fc947eb091bb37f151ff99eb3555
     }
+=======
+>>>>>>> origin/master
+>>>>>>> refs/remotes/juccuartasmo/master
   })
   
   #Aplicación de método Holt-Winters

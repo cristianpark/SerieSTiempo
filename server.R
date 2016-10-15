@@ -13,6 +13,7 @@ library(forecast)
 
 shinyServer(function(input, output){
   serie<-NULL
+  seriePronostico<-NULL
   serie.fit<-NULL
   serie.for<-NULL
   
@@ -57,7 +58,6 @@ shinyServer(function(input, output){
       
     return(serie)
   })
-  
   #Obtener los registros excepto los últimos  (para el conjunto de entrenamiento)
   primerosSerie<-function(data, n){
     data <- as.ts(data)
@@ -101,6 +101,7 @@ shinyServer(function(input, output){
               bty = "n")                                     # caja alrededor de la leyenda
     }
   })
+  
   
   #Aplicación de método Holt-Winters
   output$holtWinters<-renderPrint({
@@ -181,6 +182,20 @@ shinyServer(function(input, output){
         modelo
     }
   })
+<<<<<<< HEAD
+  
+  
+  output$graficoRegresion<-renderPlot({
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      plot(t)
+=======
 
   ### Suavizado doble
   
@@ -196,10 +211,59 @@ shinyServer(function(input, output){
               lwd = c(2),                        # grosor lineas
               col = c('black'), # color lineas
               bty = "n")                                     # caja alrededor de la leyenda
+>>>>>>> 635ee8ea1c71fc947eb091bb37f151ff99eb3555
     }
   })
   
   #Aplicación de método Holt-Winters
+<<<<<<< HEAD
+  output$resumenRegresion<-renderPrint({
+    
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+        
+      output$resumenRegresion<-renderPrint ({summary(m1)})
+      
+    }
+  })
+  
+  output$graficoAjuste<-renderPlot({
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      
+      ## Grafica de ajuste.
+      plot(t,serie, type = "o", lwd = 3)                                         # ancho de la linea
+      
+      
+      lines(m1$fitted.values, col = "red", lwd = 2)
+      
+      
+      legend( "topleft",                                     # posicion
+              c("Serie real","Ajuste Regresion"),            # texto
+              lwd = c(3, 2),                                 # grosor lineas
+              col = c('black','red'),                        # color lineas
+              bty = "n")                                     # sin caja alrededor de la leyenda
+      
+      grid()
+      
+      
+      
+    }
+  })
+  
+=======
   output$holtWintersD<-renderPrint({
     conjuntos<-conjuntosPrueba()
     
@@ -278,6 +342,7 @@ shinyServer(function(input, output){
       modeloD
     }
   })
+<<<<<<< HEAD
   #Fin suavizado doble
 
   ### Regresión lineal simple
@@ -559,4 +624,7 @@ shinyServer(function(input, output){
   })
     ##FIN tendencia cuadrática
 
+=======
+>>>>>>> 635ee8ea1c71fc947eb091bb37f151ff99eb3555
+>>>>>>> ced35416a92251b3181b226ae2c22ef7b9e71fde
 })

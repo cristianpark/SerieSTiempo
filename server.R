@@ -281,7 +281,6 @@ shinyServer(function(input, output){
   #Fin suavizado doble
 
   ### Regresión lineal simple
-
   output$graficoRegresion<-renderPlot({
     serie<-cargarArchivo()
     if(!is.null(serie)){
@@ -420,7 +419,8 @@ shinyServer(function(input, output){
       
       plot(serie,
            type = 'o',
-           lwd=2)
+           lwd=2, 
+          ylim = c(min(serie)-20,max(serie)+20)) # límites min y max del eje Y
       
       lines(y1,col='red',lwd=2)
       

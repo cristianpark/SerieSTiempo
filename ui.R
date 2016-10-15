@@ -1,6 +1,9 @@
 
-# This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
+# Archivo ui.R
+# @author   Cristian Gómez Alvarez <cristianpark@gmail.com>
+# @contributor    Juan Camilo Cuartas <juancamilo.cuartas@gmail.com>
+#
+# Archivo con la interfaz gráfica de la aplicación Shiny para series de tiempo
 # 
 # http://www.rstudio.com/shiny/
 #
@@ -17,6 +20,8 @@ shinyUI(pageWithSidebar(
       tabPanel("Serie",
         br(),
         fileInput('archivoSerie', 'Archivo de la serie de tiempo...', accept=c('text/plain')),
+        htmlOutput("labelPreviewArchivo"),
+        verbatimTextOutput("previewArchivo"),
         selectInput("decimalSep", "Separador de decimales", choices=list(".", ","), multiple = FALSE,
                     selectize = TRUE, width = NULL, size = NULL),
         selectInput("datosSep", "Separador de datos", choices=list("Tab"="\t", "Espacio"=" ", "Espacio doble"="  "), multiple = FALSE,
@@ -37,7 +42,9 @@ shinyUI(pageWithSidebar(
       tabPanel("Predicción", 
          br(),
          strong("Periodos predicción"),
-         textInput("periodosPrediccion", width = "50px", label="", value = 4)
+         textInput("periodosPrediccion", width = "50px", label="", value = 4),
+         strong("Periodos validación"),
+         textInput("periodosValidacion", width = "50px", label="", value = 4)
       )
     )
   ),
@@ -45,16 +52,21 @@ shinyUI(pageWithSidebar(
   # Show a plot of the generated distribution
   mainPanel(
     tabsetPanel(
+      ##Suavizado exponencial
       tabPanel("Suavizado Exponencial",
-        br(),
-        strong("Serie"),        
         plotOutput("graficoSuavizado", height = "350px"),
         strong("Método Holt-Winters"),
-        textOutput("holtWinters"),
+        verbatimTextOutput("holtWinters"),
         br(),
         strong("Error cuadrático"),
-        textOutput("errorWinters")
+        htmlOutput("errorWinters"),
+        plotOutput("graficoAjusteSE"),
+        strong("Predicción"),
+        plotOutput("graficoPrediccionSE"),
+        strong("Predicción con Forecast"),
+        plotOutput("graficoPrediccionFSE")
       ),
+<<<<<<< HEAD
       tabPanel("Pronostico con Regresion",
         br(),
         strong("Serie"),
@@ -66,6 +78,25 @@ shinyUI(pageWithSidebar(
       )
       
       
+=======
+      
+      ##Suavizado exponencial doble
+      tabPanel("Exponencial Doble",
+         plotOutput("graficoSuavizadoD", height = "350px"),
+         strong("Suavizado Exponencial Doble"),
+         verbatimTextOutput("holtWintersD"),
+         br(),
+         strong("Error cuadrático"),
+         htmlOutput("errorWintersD"),
+         plotOutput("graficoAjusteSED"),
+         strong("Predicción"),
+         plotOutput("graficoPrediccionSED"),
+         strong("Predicción con Forecast"),
+         plotOutput("graficoPrediccionFSED")
+      )
+      
+      ##Otros métodos
+>>>>>>> 635ee8ea1c71fc947eb091bb37f151ff99eb3555
     )
   )
 )#Fin pageWithSideBar

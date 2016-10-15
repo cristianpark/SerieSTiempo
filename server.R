@@ -7,81 +7,55 @@
 
 library(shiny)
 
-shinyServer(function(input, output) {
-  variable<<-1
-  
-  #Mostrar la salida  
-#   output$salida<-renderText({ print(cat("Salida ",decimalSep)) })  
-  
-  #serie1csv <- read.csv(file = 'serie1.csv', # nombre del archivo
-  #                      header = TRUE,           # nombres de columnas
-  #                      sep = " ",               # separador de campos
-  #                      dec = ".")               # separador de decimales
-  
-  #output$salida<-renderText({ cat("Hola pues ", input$decimalSep) })
-  
-  output$distPlot <- renderPlot({
-      #Leer los datos del archivo utilizando la configuración seleccionada  
+shinyServer(function(input, output){
+  #Función para cargar el archivo de la serie a analizar
+  cargarArchivo<-reactive({    
+    if(is.null(seriecsv)){
+      #Leer los datos del archivo utilizando la configuración seleccionada (se necesita reactive para poner hacerlo todo)
       decimalSep<-input$decimalSep
       datosSep<-input$datosSep
       encabezado<-input$encabezado
-      if(encabezado==TRUE)
-        lineasSaltar<-0
-      else
-        lineasSaltar<-input$lineasSaltar
+      lineasSaltar<-input$lineasSaltar
       periodicidad<-input$periodicidad
       columnaDatos<-input$columnaDatos
       
-      #Leer el archivo    
+      #Leer el archivo   
       archivo<-input$archivoSerie
       
       if (is.null(archivo))
         return(NULL)
       
+      #Cargar el CSV
       seriecsv <- read.csv(file = archivo$datapath, # nombre del archivo
-                            header = as.logical(encabezado),       # nombres de columnas
-                            skip=as.numeric(lineasSaltar),
-                            sep = as.character(datosSep),               # separador de campos
-                            dec = as.character(decimalSep))               # separador de decimales
+                           header = as.logical(encabezado),       # nombres de columnas
+                           skip=as.numeric(lineasSaltar),
+                           sep = as.character(datosSep),               # separador de campos
+                           dec = as.character(decimalSep))               # separador de decimales
+    }
       
-    #hist(seriecsv$x)
-    Dt  <- c(NaN, diff(seriecsv$x))                                           # cambio absoluto
-    rt  <- c(NaN, log(seriecsv$x[2:length(seriecsv$x)] / seriecsv$x[1:(length(seriecsv$x) - 1)] )) # rentabilidad logaritmica 
-      
-    options(repr.plot.width=8, repr.plot.height=7)
-    par(mfrow=c(3,1))
-    
-    plot.ts( seriecsv$x,  ylab = 'TRM', bty = 'n' );            grid()
-    plot.ts( Dt,   ylab = 'Dt',  bty = 'n', col="blue"); grid()
-    plot.ts( rt,   ylab = 'rt',  bty = 'n', col="red");  grid()
-    
-    variable<-5
-    
-       
-    # generate bins based on input$bins from ui.R
-    #
-    #x    <- faithful[, 2] 
-    #bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
-    # draw the histogram with the specified number of bins
-    #hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    
+    return(seriecsv)
   })
-  
-  output$normalidad<-renderText({
-    print(variable)
     
+  #Gráfico de salida  
+  output$distPlot <- renderPlot({
+    seriecsv<-cargarArchivo()
+        
+    hist(seriecsv[[input$columnaDatos]])
+    
+#     Dt  <- c(NaN, diff(seriecsv$x))                                           # cambio absoluto
+#     rt  <- c(NaN, log(seriecsv$x[2:length(seriecsv$x)] / seriecsv$x[1:(length(seriecsv$x) - 1)] )) # rentabilidad logaritmica 
+#       
 #     options(repr.plot.width=8, repr.plot.height=7)
-#     par(mfrow=c(1,1))
-#     plot.ts( rt,   ylab = 'rt',  bty = 'n', col="red")
+#     par(mfrow=c(3,1))
+#     
+#     plot.ts( seriecsv$x,  ylab = 'TRM', bty = 'n' );            grid()
+#     plot.ts( Dt,   ylab = 'Dt',  bty = 'n', col="blue"); grid()
+#     plot.ts( rt,   ylab = 'rt',  bty = 'n', col="red");  grid()  
   })
   
-  server <- function(input, output, session) {
-    observeEvent(input$pruebaBoton, {
-      output$salida<-renderText({ "Dieron click" })
-      
-      session$sendCustomMessage(type = 'testmessage',
-                                message = 'Thank you for clicking')
-    })
-  }
+  #Gráfica de normalidad
+  output$normalidad<-renderText({
+    seriecsv<-cargarArchivo
+    print(length(seriecsv))
+  })
 })

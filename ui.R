@@ -16,11 +16,11 @@ shinyUI(pageWithSidebar(
     fileInput('archivoSerie', 'Archivo de la serie de tiempo...',
               accept=c('text/plain')
     ),
-    selectInput("decimalSep", "Separador de decimales", choices=list(",", "."), multiple = FALSE,
+    selectInput("decimalSep", "Separador de decimales", choices=list(".", ","), multiple = FALSE,
                 selectize = TRUE, width = NULL, size = NULL),
     selectInput("datosSep", "Separador de datos", choices=list("Tab"="\t", "Espacio"=" ", "Espacio doble"="  "), multiple = FALSE,
                 selectize = TRUE, width = NULL, size = NULL),
-    selectInput("encabezado", "Encabezado", choices=list("Si"=TRUE, "No"=FALSE), selected = c(FALSE), multiple = FALSE,
+    selectInput("encabezado", "Encabezado", choices=list("Si"=TRUE, "No"=FALSE), selected = c(TRUE), multiple = FALSE,
                 selectize = TRUE, width = NULL, size = NULL),
     conditionalPanel(
       condition = "input.encabezado=='TRUE'",

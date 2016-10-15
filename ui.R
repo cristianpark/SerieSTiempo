@@ -80,9 +80,37 @@ shinyUI(pageWithSidebar(
          plotOutput("graficoPrediccionSED"),
          strong("Predicción con Forecast"),
          plotOutput("graficoPrediccionFSED")
-      )
+      ),
       
-      ##Otros métodos
+      tabPanel("Pronostico con Regresion",
+               br(),
+               strong("Serie"),
+               plotOutput("graficoRegresion", height = "350px"),
+               strong("Resumen de la regresion"),
+               verbatimTextOutput("resumenRegresion"),
+               strong("Grafica de ajuste."),
+               plotOutput("graficoAjuste", height = "350px"),
+               strong("Analisis de residuales"),
+               plotOutput("graficoResiduales", height = "350px"),
+               strong("Grafico Pronostico"),
+               plotOutput("graficoPronostico", height = "350px")
+               
+      ),
+      
+      ##Regresión cuadrática
+      tabPanel("Tendencia Cuadrática",
+               plotOutput("graficoCuadratica", height = "350px"),
+               strong("Método de Tendencia Cuadrática"),
+               verbatimTextOutput("metodoCuadratico"),
+               br(),
+               strong("Resumen Regresión"),
+               verbatimTextOutput("resumenCuadratico"),
+               plotOutput("graficoAjusteCuadratica"),
+               strong("Análisis residuales"),
+               plotOutput("graficoResidualesCuadratica")
+#                strong("Predicción"),
+#                plotOutput("graficoPrediccionCuadratica")
+      )
     )
   )
 )#Fin pageWithSideBar

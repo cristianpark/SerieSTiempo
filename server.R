@@ -6,9 +6,12 @@
 #
 
 library(shiny)
+library(forecast)
 
 shinyServer(function(input, output){
   serie<-NULL
+  serie.fit<-NULL
+  serie.for<-NULL
   
   #Función para cargar el archivo de la serie a analizar
   cargarArchivo<-reactive({    
@@ -20,7 +23,7 @@ shinyServer(function(input, output){
       lineasSaltar<-input$lineasSaltar
       periodicidad<-input$periodicidad
       columnaDatos<-input$columnaDatos
-      añoInicio<-input$añoInicio
+      anioInicio<-input$anioInicio
       periodoInicio<-input$periodoInicio
       
       #Leer el archivo   
@@ -38,34 +41,73 @@ shinyServer(function(input, output){
       
       #Crea la serie de tiempo partiendo del CSV
       serie<-ts(data=seriecsv[[columnaDatos]],        #Genera los datos aleatorios
-         start = c(as.numeric(añoInicio), as.numeric(periodoInicio)),         #Año de inicio - periodo de inicio
+         start = c(as.numeric(anioInicio), as.numeric(periodoInicio)),         #Año de inicio - periodo de inicio
          frequency = as.numeric(periodicidad))
     }
       
     return(serie)
   })
-    
-  #Gráfico de salida  
-  output$distPlot <- renderPlot({
+  
+  #Obtener los registros excepto los últimos  (para el conjunto de entrenamiento)
+  primerosSerie<-function(data, n){
+    data <- as.ts(data)
+    as.ts(window(data,start=tsp(data)[1], end=tsp(data)[2]-n/frequency(data)))
+  }
+  
+  #Obtener los últimos n periodos de una serie (para el conjunto de validación)
+  ultimosSerie<- function(data,n) {
+    data <- as.ts(data)
+    as.ts(window(data,start=tsp(data)[2]-(n-1)/frequency(data)))
+  }
+  
+  #Conjuntos de prueba/validación
+  conjuntosPrueba<-reactive({
     serie<-cargarArchivo()
+    
     if(!is.null(serie)){
-      plot(serie)
+      n<-length(serie) #longitud de la serie
+      
+      serie.fit<-primerosSerie(serie, as.numeric(input$periodosPrediccion))
+      serie.for<-ultimosSerie(serie, as.numeric(input$periodosPrediccion))
     }
     
-#     Dt  <- c(NaN, diff(seriecsv$x))                                           # cambio absoluto
-#     rt  <- c(NaN, log(seriecsv$x[2:length(seriecsv$x)] / seriecsv$x[1:(length(seriecsv$x) - 1)] )) # rentabilidad logaritmica 
-#       
-#     options(repr.plot.width=8, repr.plot.height=7)
-#     par(mfrow=c(3,1))
-#     
-#     plot.ts( seriecsv$x,  ylab = 'TRM', bty = 'n' );            grid()
-#     plot.ts( Dt,   ylab = 'Dt',  bty = 'n', col="blue"); grid()
-#     plot.ts( rt,   ylab = 'rt',  bty = 'n', col="red");  grid()  
+    #Vector con la serie y los conjuntos de prueba y 
+    return(list(serie=serie, fits=serie.fit, fors=serie.for))
   })
   
-  #Gráfica de normalidad
-  output$normalidad<-renderText({
-    format(input$fechasSerie[1])
-    format(input$fechasSerie[2])
+  ### Método de suavizado exponencial
+  
+  #Gráfico de la serie 
+  output$graficoSuavizado<-renderPlot({
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      plot(serie)
+    }
+  })
+  
+  #Aplicación de método Holt-Winters
+  output$holtWinters<-renderPrint({
+    conjuntos<-conjuntosPrueba()
+    
+    if(!is.null(conjuntos$serie)){
+      serie<-conjuntos$serie
+      
+      serie.fit<-as.ts(conjuntos$fits)
+      serie.for<-as.ts(conjuntos$fors)
+      
+      #Debug
+      cat(file=stderr(), "For ", serie.for, "\n")
+      
+      modelo<-HoltWinters(x = serie.fit,      # conjunto de entrenamiento de la serie
+                        alpha = NULL,    # NULL indica que se calcule el alpha óptimo
+                        beta = FALSE,   # no se considera esta componente
+                        gamma = FALSE)  # no se considera esta componente
+      
+#       cat(file=stderr(), "For ", modelo, "\n")        
+
+        output$errorWinters<-renderText({modelo$SSE})
+        modelo
+    }
   })
 })

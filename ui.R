@@ -29,12 +29,13 @@ shinyUI(pageWithSidebar(
         selectInput("periodicidad", "Periodicidad serie", choices=list("Mensual"=12, "Bimestral"=6, "Trimestral"=4, "Cuatrimestres"=3, "Semestral"=2, "Diaria"=365), multiple = FALSE,
                         selectize = TRUE, width = NULL, size = NULL),
         strong("Año de inicio"),
-        textInput("añoInicio", width = "70px", label="", value = 2010),
+        textInput("anioInicio", width = "70px", label="", value = 2010),
         strong("Periodo inicio"),
         textInput("periodoInicio", width = "50px", label="", value = 1),
         textInput("columnaDatos", width = "100px", label="Columna datos", value = "x")
       ),
       tabPanel("Predicción", 
+         br(),
          strong("Periodos predicción"),
          textInput("periodosPrediccion", width = "50px", label="", value = 4)
       )
@@ -45,12 +46,14 @@ shinyUI(pageWithSidebar(
   mainPanel(
     tabsetPanel(
       tabPanel("Suavizado Exponencial",
-        h4("RESULTADOS", align="center"),
-        tags$head(tags$script(src = "message-handler.js")),    
-        textOutput("salida"),
-        plotOutput("distPlot"),
-        h4("Siguiente parámetro"),
-        textOutput("normalidad")
+        br(),
+        strong("Serie"),        
+        plotOutput("graficoSuavizado", height = "350px"),
+        strong("Método Holt-Winters"),
+        textOutput("holtWinters"),
+        br(),
+        strong("Error cuadrático"),
+        textOutput("errorWinters")
       ),
       tabPanel("Suavizado Browniano")
     )

@@ -1,6 +1,9 @@
 
-# This is the server logic for a Shiny web application.
-# You can find out more about building applications with Shiny here:
+# Archivo server.R
+# @author         Cristian Gómez Alvarez <cristianpark@gmail.com>
+# @contributor    Juan Camilo Cuartas <juancamilo.cuartas@gmail.com>
+#
+# Contiene las rutinas de los diferentes ajustes que se hacen a series de tiempo
 # 
 # http://www.rstudio.com/shiny/
 #

@@ -1,6 +1,9 @@
 
-# This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
+# Archivo ui.R
+# @author   Cristian Gómez Alvarez <cristianpark@gmail.com>
+# @contributor    Juan Camilo Cuartas <juancamilo.cuartas@gmail.com>
+#
+# Archivo con la interfaz gráfica de la aplicación Shiny para series de tiempo
 # 
 # http://www.rstudio.com/shiny/
 #

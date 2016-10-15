@@ -10,6 +10,7 @@ library(forecast)
 
 shinyServer(function(input, output){
   serie<-NULL
+  seriePronostico<-NULL
   serie.fit<-NULL
   serie.for<-NULL
   
@@ -47,7 +48,6 @@ shinyServer(function(input, output){
       
     return(serie)
   })
-  
   #Obtener los registros excepto los últimos  (para el conjunto de entrenamiento)
   primerosSerie<-function(data, n){
     data <- as.ts(data)
@@ -86,6 +86,7 @@ shinyServer(function(input, output){
     }
   })
   
+  
   #Aplicación de método Holt-Winters
   output$holtWinters<-renderPrint({
     conjuntos<-conjuntosPrueba()
@@ -110,4 +111,66 @@ shinyServer(function(input, output){
         modelo
     }
   })
+  
+  
+  output$graficoRegresion<-renderPlot({
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      plot(t)
+    }
+  })
+  
+  #Aplicación de método Holt-Winters
+  output$resumenRegresion<-renderPrint({
+    
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+        
+      output$resumenRegresion<-renderPrint ({summary(m1)})
+      
+    }
+  })
+  
+  output$graficoAjuste<-renderPlot({
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      ## Variable x
+      t<- seq(1:length(serie))                          # Variable independiente t: Tiempo
+      
+      ## Ajuste
+      m1 <- lm(serie~t)
+      
+      ## Grafica de ajuste.
+      plot(t,serie, type = "o", lwd = 3)                                         # ancho de la linea
+      
+      
+      lines(m1$fitted.values, col = "red", lwd = 2)
+      
+      
+      legend( "topleft",                                     # posicion
+              c("Serie real","Ajuste Regresion"),            # texto
+              lwd = c(3, 2),                                 # grosor lineas
+              col = c('black','red'),                        # color lineas
+              bty = "n")                                     # sin caja alrededor de la leyenda
+      
+      grid()
+      
+      
+      
+    }
+  })
+  
 })

@@ -55,7 +55,17 @@ shinyUI(pageWithSidebar(
         strong("Error cuadrático"),
         textOutput("errorWinters")
       ),
-      tabPanel("Suavizado Browniano")
+      tabPanel("Pronostico con Regresion",
+        br(),
+        strong("Serie"),
+        plotOutput("graficoRegresion", height = "350px"),
+        strong("Resumen de la regresion"),
+        textOutput("resumenRegresion"),
+        plotOutput("graficoAjuste", height = "350px")
+        
+      )
+      
+      
     )
   )
 )#Fin pageWithSideBar

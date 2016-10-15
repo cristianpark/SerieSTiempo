@@ -8,11 +8,11 @@
 library(shiny)
 
 shinyServer(function(input, output){
-  seriecsv<-NULL
+  serie<-NULL
   
   #Función para cargar el archivo de la serie a analizar
   cargarArchivo<-reactive({    
-    if(is.null(seriecsv)){
+    if(is.null(serie)){
       #Leer los datos del archivo utilizando la configuración seleccionada (se necesita reactive para poner hacerlo todo)
       decimalSep<-input$decimalSep
       datosSep<-input$datosSep
@@ -20,6 +20,8 @@ shinyServer(function(input, output){
       lineasSaltar<-input$lineasSaltar
       periodicidad<-input$periodicidad
       columnaDatos<-input$columnaDatos
+      añoInicio<-input$añoInicio
+      periodoInicio<-input$periodoInicio
       
       #Leer el archivo   
       archivo<-input$archivoSerie
@@ -33,16 +35,21 @@ shinyServer(function(input, output){
                            skip=as.numeric(lineasSaltar),
                            sep = as.character(datosSep),               # separador de campos
                            dec = as.character(decimalSep))               # separador de decimales
+      
+      #Crea la serie de tiempo partiendo del CSV
+      serie<-ts(data=seriecsv[[columnaDatos]],        #Genera los datos aleatorios
+         start = c(as.numeric(añoInicio), as.numeric(periodoInicio)),         #Año de inicio - periodo de inicio
+         frequency = as.numeric(periodicidad))
     }
       
-    return(seriecsv)
+    return(serie)
   })
     
   #Gráfico de salida  
   output$distPlot <- renderPlot({
-    seriecsv<-cargarArchivo()
-    if(!is.null(seriecsv)){
-      hist(seriecsv[[input$columnaDatos]])
+    serie<-cargarArchivo()
+    if(!is.null(serie)){
+      plot(serie)
     }
     
 #     Dt  <- c(NaN, diff(seriecsv$x))                                           # cambio absoluto

@@ -9,7 +9,7 @@ library(shiny)
 
 shinyUI(pageWithSidebar(
   # Application title
-  headerPanel("Predicción en Series"),
+  headerPanel(h2("Predicción en Series de Tiempo", align="center")),
   
   #Sidebar
   sidebarPanel(
@@ -23,11 +23,11 @@ shinyUI(pageWithSidebar(
                     selectize = TRUE, width = NULL, size = NULL),
         selectInput("encabezado", "Encabezado", choices=list("Si"=TRUE, "No"=FALSE), selected = c(TRUE), multiple = FALSE,
                     selectize = TRUE, width = NULL, size = NULL),
-        conditionalPanel(
-          condition = "input.pruebaBoton",
-          strong("Número de líneas a omitir"),
-          textInput("lineasSaltar", width = "50px", label="", value = 0)
-        ),
+        strong("Número de líneas a omitir"),
+        textInput("lineasSaltar", width = "50px", label="", value = 0),
+        #Periodicidad de la serie
+        selectInput("periodicidad", "Periodicidad serie", choices=list("Mensual"=12, "Bimestral"=6, "Trimestral"=4, "Cuatrimestres"=3, "Semestral"=2, "Diaria"=365), multiple = FALSE,
+                        selectize = TRUE, width = NULL, size = NULL),
         strong("Año de inicio"),
         textInput("añoInicio", width = "70px", label="", value = 2010),
         strong("Periodo inicio"),
@@ -39,28 +39,21 @@ shinyUI(pageWithSidebar(
          textInput("periodosPrediccion", width = "50px", label="", value = 4)
       )
     )
-    #Periodicidad de la serie
-#     selectInput("periodicidad", "Periodicidad serie", choices=list("Mensual"=12, "Bimestral"=6, "Trimestral"=4, "Cuatrimestres"=3, "Semestral"=2, "Diaria"=365), multiple = FALSE,
-#                 selectize = TRUE, width = NULL, size = NULL),
-#     
-#     #Fechas de la serie
-#     dateRangeInput("fechasSerie", "Fechas:",
-#                    start  = "2001-01-01",
-#                    end    = "2010-12-31",
-#                    min    = "1990-01-01",
-#                    max    = "2016-06-30",
-#                    format = "yyyy-mm-dd",
-#                    separator = " - "),
-    
   ),
   
   # Show a plot of the generated distribution
   mainPanel(
-    h4("RESULTADOS", align="center"),
-    tags$head(tags$script(src = "message-handler.js")),    
-    textOutput("salida"),
-    plotOutput("distPlot"),
-    h4("Siguiente parámetro"),
-    textOutput("normalidad")
+    tabsetPanel(
+      tabPanel("Suavizado Exponencial",
+        h4("RESULTADOS", align="center"),
+        tags$head(tags$script(src = "message-handler.js")),    
+        textOutput("salida"),
+        plotOutput("distPlot"),
+        h4("Siguiente parámetro"),
+        textOutput("normalidad")
+      ),
+      tabPanel("Suavizado Browniano")
+    )
   )
-))
+)#Fin pageWithSideBar
+)#Fin shinyUI

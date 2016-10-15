@@ -49,6 +49,7 @@ shinyUI(pageWithSidebar(
   # Show a plot of the generated distribution
   mainPanel(
     tabsetPanel(
+      ##Suavizado exponencial
       tabPanel("Suavizado Exponencial",
         plotOutput("graficoSuavizado", height = "350px"),
         strong("Método Holt-Winters"),
@@ -62,7 +63,23 @@ shinyUI(pageWithSidebar(
         strong("Predicción con Forecast"),
         plotOutput("graficoPrediccionFSE")
       ),
-      tabPanel("Suavizado Browniano")
+      
+      ##Suavizado exponencial doble
+      tabPanel("Exponencial Doble",
+         plotOutput("graficoSuavizadoD", height = "350px"),
+         strong("Suavizado Exponencial Doble"),
+         verbatimTextOutput("holtWintersD"),
+         br(),
+         strong("Error cuadrático"),
+         htmlOutput("errorWintersD"),
+         plotOutput("graficoAjusteSED"),
+         strong("Predicción"),
+         plotOutput("graficoPrediccionSED"),
+         strong("Predicción con Forecast"),
+         plotOutput("graficoPrediccionFSED")
+      )
+      
+      ##Otros métodos
     )
   )
 )#Fin pageWithSideBar

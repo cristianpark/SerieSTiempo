@@ -78,7 +78,7 @@ shinyServer(function(input, output){
       serie.for<-ultimosSerie(serie, as.numeric(input$periodosValidacion))
     }
     
-    #Vector con la serie y los conjuntos de prueba y 
+    #Vector con la serie y los conjuntos de prueba y validación
     return(list(serie=serie, fits=serie.fit, fors=serie.for))
   })
   
@@ -176,6 +176,103 @@ shinyServer(function(input, output){
         
         #Mostrar la información del método Holt-Winters
         modelo
+    }
+  })
+
+  ### Suavizado doble
+  
+  #Gráfico de la serie 
+  output$graficoSuavizadoD<-renderPlot({
+    serieD<-cargarArchivo()
+    if(!is.null(serieD)){
+      options(repr.plot.width=10, repr.plot.height=6)
+      plot(serieD)
+      
+      legend( "top",                                     # posicion
+              c("Serie real"),         # texto
+              lwd = c(2),                        # grosor lineas
+              col = c('black'), # color lineas
+              bty = "n")                                     # caja alrededor de la leyenda
+    }
+  })
+  
+  #Aplicación de método Holt-Winters
+  output$holtWintersD<-renderPrint({
+    conjuntos<-conjuntosPrueba()
+    
+    if(!is.null(conjuntos$serie)){
+      serieD<-conjuntos$serie
+      serieD.fit<-as.ts(conjuntos$fits)
+      serieD.for<-as.ts(conjuntos$fors)
+      
+      #Debug
+      #       cat(file=stderr(), "For ", serie.for, "\n")
+      
+      modeloD<-HoltWinters(x = serieD.fit,      # conjunto de entrenamiento de la serie
+                          alpha = NULL,    # NULL indica que se calcule el alpha óptimo
+                          beta = NULL,   # no se considera esta componente
+                          gamma = FALSE)  # no se considera esta componente 
+      
+      #Error cuadrático
+      output$errorWintersD<-renderUI({tags$code(modeloD$SSE)})
+      
+      #Dibujar el gráfico de ajuste
+      output$graficoAjusteSED<-renderPlot({
+        options(repr.plot.width=10, repr.plot.height=6)
+        
+        plot(serieD,              # datos de la serie
+             type = "o",     # o -- overplot
+             lwd = 3,        # ancho de la linea
+             ylim = c(min(serieD)-1,max(serieD)+1)) # límites min y max del eje Y
+        
+        lines(modeloD$fitted[,1], col = "blue",lwd = 2)
+        
+        legend( "topleft",                                     # posicion
+                c("Serie real","modelo"),         # texto
+                lwd = c(3, 2),                        # grosor lineas
+                col = c('black','blue'), # color lineas
+                bty = "n")                                     # caja alrededor de la leyenda
+        
+        grid()
+      })        
+      
+      #Predicción de los n periodos elegidos por el usuario
+      prediccionHWD <- predict( modeloD,                         # Modelo ajustado por HW
+                               n.ahead = as.numeric(input$periodosPrediccion),                # Periodos a pronosticar
+                               prediction.interval = TRUE) # Calcular intervalos
+      
+      #Gráfico de la predicción
+      output$graficoPrediccionSED<-renderPlot({
+        options(repr.plot.width=10, repr.plot.height=6)
+        
+        plot(serieD,              # datos de la serie
+             type = "o",     # o -- overplot
+             lwd = 3,        # ancho de la linea
+             ylim = c(min(serieD)-1,max(serieD)+1)) # límites min y max del eje Y
+        
+        lines( prediccionHWD[,1], col ="red",  lwd = 2)
+        
+        legend( x = "topleft", 
+                legend = c("Real", "modelo"),
+                lwd = c(3,2),
+                col = c('black','red'),
+                bty = 'n')
+        
+        grid()
+      })
+      
+      #Predicción usando forecast
+      prediccionFSED<-forecast.HoltWinters(modeloD,   # Modelo ajustado por HW
+                                          h=as.numeric(input$periodosPrediccion))  # Periodos a pronosticar
+      
+      #Gráfico de la predicción
+      output$graficoPrediccionFSED<-renderPlot({
+        options(repr.plot.width=10, repr.plot.height=6)
+        plot.forecast(prediccionFSED)
+      })
+      
+      #Mostrar la información del método Holt-Winters
+      modeloD
     }
   })
 })
